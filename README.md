@@ -21,3 +21,7 @@ Usage of ./bin/ws-arraybuffer:
   -int=100ms: interval to send message
   -size=10000: size of message (in float32s)
 ```
+
+## Builds
+
+http://gobuild.io/github.com/overlordtm/ws-arraybuffer
