@@ -160,7 +160,7 @@ conn.onmessage = function(e) {
 
         var delta = ((new Date).getTime() - last) / 1E3;
         last = (new Date).getTime();
-        div.innerText = 1 / delta
+        div.innerHTML = 1 / delta
     })
 };
 </script>
