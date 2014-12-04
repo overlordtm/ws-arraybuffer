@@ -97,13 +97,16 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 <div id="fps"></div>
 
 <script>
+
+"use strict"
+
  var div = document.getElementById("fps"),
     ctx = document.getElementById("myCanvas").getContext("2d"),
     data = new Float32Array(5E3);
 
-conn = new WebSocket("ws://" + window.location.host + "/ws");
+var conn = new WebSocket("ws://" + window.location.host + "/ws");
 conn.binaryType = "arraybuffer";
-last = (new Date).getTime();
+var last = (new Date).getTime();
 
 function d(data, y) {
     ctx.moveTo(0, y);
@@ -155,10 +158,9 @@ conn.onmessage = function(e) {
 
         conn.send("foo"); // request new data via WS
 
-        delta = ((new Date).getTime() - last) / 1E3;
-        fps = 1 / delta;
+        var delta = ((new Date).getTime() - last) / 1E3;
         last = (new Date).getTime();
-        div.innerText = fps
+        div.innerText = 1 / delta
     })
 };
 </script>
