@@ -10,11 +10,9 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"time"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
-var interval = flag.Duration("int", 100*time.Millisecond, "interval to send message")
 var size = flag.Int("size", 5000, "size of message (in float32s)")
 var homeTempl = template.Must(template.New("base").Parse(tpl))
 
@@ -22,7 +20,6 @@ func main() {
 	flag.Parse()
 
 	fmt.Printf("Serving: %s\n", *addr)
-	fmt.Printf("Interval: %s\n", *interval)
 	fmt.Printf("Size (float32): %d\n", *size)
 
 	http.HandleFunc("/", serveHome)
