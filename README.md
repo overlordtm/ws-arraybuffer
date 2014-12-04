@@ -2,6 +2,16 @@
 
 Demonstration how to use WebSockets and ArrayBuffer to transport binary data. Just open browser on http://localhost:8080 and open developemnt console.
 
+## Install
+
+```
+mkdir go
+cd go
+export GOPATH=`pwd`
+go get github.com/overlordtm/ws-arraybuffer
+./bin/ws-arraybuffer
+```
+
 ## Usage
 
 ```
