@@ -67,6 +67,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		messageType, p, err := ws.ReadMessage()
 		if err != nil {
 			log.Println("read error", err)
+			continue
 		} else {
 			log.Println("got msg", messageType, string(p))
 		}
