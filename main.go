@@ -47,8 +47,8 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+	ReadBufferSize:  1024 * 5,
+	WriteBufferSize: 1024 * 5,
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
@@ -63,13 +63,10 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for {
-
-		messageType, p, err := ws.ReadMessage()
+		_, _, err := ws.ReadMessage()
 		if err != nil {
 			log.Println("read error", err)
-			continue
-		} else {
-			log.Println("got msg", messageType, string(p))
+			break
 		}
 
 		data := makeData(*size)
@@ -100,82 +97,54 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 <div id="fps"></div>
 
 <script>
-    var c = document.getElementById("myCanvas");
-    var fpsDiv = document.getElementById("fps");
-    var ctx = c.getContext("2d");
+ var div = document.getElementById("fps"),
+    ctx = document.getElementById("myCanvas").getContext("2d"),
+    data = new Float32Array(5E3);
 
-    var data = new Float32Array(5000);
+conn = new WebSocket("ws://" + window.location.host + "/ws");
+conn.binaryType = "arraybuffer";
+last = (new Date).getTime();
 
-    conn = new WebSocket("ws://" + window.location.host + "/ws");
-    conn.binaryType = "arraybuffer"
-
-    last = new Date().getTime()
-
-    function drawLine(data, y) {
-        ctx.moveTo(0,y);
-
-        for (i = 0; i < data.length; i=i+2) { 
-            var dva = Math.floor(y + data[i])
-            var ena = i;
-            ctx.lineTo(ena,dva);
-            ctx.moveTo(ena,dva);
-        }
+function d(data, y) {
+    ctx.moveTo(0, y);
+    for (var i = 0; i < data.length; i++) {
+        var f = Math.floor(y + data[i]),
+            g = i;
+        ctx.lineTo(g, f)
+        ctx.moveTo(g, f)
     }
-
-    function draw() {
-
+}
+conn.onopen = function() {
+    conn.send("foo")
+};
+conn.onmessage = function(e) {
+    data.set(new Float32Array(e.data));
+    window.requestAnimationFrame(function() {
         ctx.beginPath();
-        ctx.clearRect(0,0,1000,500);
-
-        ctx.strokeStyle="#000000";
-        drawLine(data.subarray(0,999), 0)
+        ctx.clearRect(0, 0, 1E3, 500);
+        ctx.strokeStyle = "#000000";
+        d(data.subarray(0, 999), 0);
         ctx.stroke();
-
-        ctx.strokeStyle="#FF0000";
-        drawLine(data.subarray(1000,1999),50)
+        ctx.strokeStyle = "#FF0000";
+        d(data.subarray(1E3, 1999), 50);
         ctx.stroke();
-
-        ctx.strokeStyle="#00FF00";
-        drawLine(data.subarray(2000,2999),100)
+        ctx.strokeStyle = "#00FF00";
+        d(data.subarray(2E3, 2999), 100);
         ctx.stroke();
-
-        ctx.strokeStyle="#0000FF";
-        drawLine(data.subarray(3000,3999),150)
+        ctx.strokeStyle = "#0000FF";
+        d(data.subarray(3E3, 3999), 150);
         ctx.stroke();
-
-        ctx.strokeStyle="#cccccc";
-        drawLine(data.subarray(4000,4999),200)
+        ctx.strokeStyle = "#cccccc";
+        d(data.subarray(4E3, 4999), 200);
         ctx.stroke();
-
         ctx.closePath();
-    }
-
-    var cmd = "foo"
-
-    conn.onopen = function() {
-        conn.send(cmd)
-    }
-
-    conn.onmessage = function(e) {
-        // data = new Float32Array(e.data)
-        data.set(new Float32Array(e.data))
-
-        window.requestAnimationFrame(function() {
-
-            draw()
-            conn.send(cmd)
-
-            delta = (new Date().getTime() - last)/1000
-            fps = 1/delta
-            last = new Date().getTime()
-
-            fpsDiv.innerText = fps
-        })
-
-
-    }
-
-
+        conn.send("foo");
+        delta = ((new Date).getTime() - last) / 1E3;
+        fps = 1 / delta;
+        last = (new Date).getTime();
+        div.innerText = fps
+    })
+};
 </script>
 
 </body>
