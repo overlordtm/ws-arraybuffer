@@ -121,24 +121,40 @@ conn.onmessage = function(e) {
     data.set(new Float32Array(e.data));
     window.requestAnimationFrame(function() {
         ctx.beginPath();
-        ctx.clearRect(0, 0, 1E3, 500);
+
+        ctx.clearRect(0, 0, 1E3, 500); // clear canvas
+
         ctx.strokeStyle = "#000000";
         d(data.subarray(0, 999), 0);
         ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
         ctx.strokeStyle = "#FF0000";
         d(data.subarray(1E3, 1999), 50);
         ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
         ctx.strokeStyle = "#00FF00";
         d(data.subarray(2E3, 2999), 100);
         ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
         ctx.strokeStyle = "#0000FF";
         d(data.subarray(3E3, 3999), 150);
         ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
         ctx.strokeStyle = "#cccccc";
         d(data.subarray(4E3, 4999), 200);
         ctx.stroke();
         ctx.closePath();
-        conn.send("foo");
+
+        conn.send("foo"); // request new data via WS
+
         delta = ((new Date).getTime() - last) / 1E3;
         fps = 1 / delta;
         last = (new Date).getTime();
