@@ -150,28 +150,31 @@ conn.onmessage = function(e) {
 
         ctx.strokeStyle = "#000000";
         d(data.subarray(sig1Start, sig1End), 0);
-        // ctx.stroke();
+        ctx.stroke();
+        ctx.closePath();
 
-        // ctx.beginPath();
-        // ctx.strokeStyle = "#FF0000";
+        ctx.beginPath();
+        ctx.strokeStyle = "#FF0000";
         d(data.subarray(sig2Start, sig2End), 50);
-        // ctx.stroke();
+        ctx.stroke();
+        ctx.closePath();
 
-        // ctx.beginPath();
-        // ctx.strokeStyle = "#00FF00";
+        ctx.beginPath();
+        ctx.strokeStyle = "#00FF00";
         d(data.subarray(sig3Start, sig3End), 100);
-        // ctx.stroke();
+        ctx.stroke();
+        ctx.closePath();
 
-        // ctx.beginPath();
-        // ctx.strokeStyle = "#0000FF";
+        ctx.beginPath();
+        ctx.strokeStyle = "#0000FF";
         d(data.subarray(sig4Start, sig4End), 150);
-        // ctx.stroke();
+        ctx.stroke();
+        ctx.closePath();
 
-        // ctx.beginPath();
-        // ctx.strokeStyle = "#cccccc";
+        ctx.beginPath();
+        ctx.strokeStyle = "#cccccc";
         d(data.subarray(sig5Start, sig5End), 200);
         ctx.stroke();
-
         ctx.closePath();
 
         conn.send(sigLen); // request new data via WS
