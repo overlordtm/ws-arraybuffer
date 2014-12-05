@@ -182,35 +182,35 @@ conn.onmessage = function(e) {
     })
 };
 
-// setInterval(function() {
-//     var delta = ((new Date).getTime() - last) / 1E3;
-//     last = (new Date).getTime();
-//     var fps = ctr / delta;
-//     avgFps = 0.25 * avgFps + 0.75 * fps;
+setInterval(function() {
+    var delta = ((new Date).getTime() - last) / 1E3;
+    last = (new Date).getTime();
+    var fps = ctr / delta;
+    avgFps = 0.25 * avgFps + 0.75 * fps;
     
-//     div.innerHTML = sigLen + ":" + parseInt(fps) + ":" + parseInt(avgFps);
+    div.innerHTML = sigLen + ":" + parseInt(fps) + ":" + parseInt(avgFps);
 
-//     ctr = 0;
-// }, 1000)
+    ctr = 0;
+}, 1000)
 
-// setInterval(function() {
+setInterval(function() {
 
-//     if (avgFps < 10) {
-//         sigLen = sigLen / 2;
-//         dataLen = sigLen * 5;
+    if (avgFps < 10) {
+        sigLen = sigLen / 2;
+        dataLen = sigLen * 5;
 
-//         sig1End = sigLen -1;
-//         sig2Start = sig1End + 1;
-//         sig2End = sig2Start + sigLen - 1;
-//         sig3Start = sig2End + 1;
-//         sig3End = sig3Start + sigLen - 1;
-//         sig4Start = sig3End + 1;
-//         sig4End = sig4Start + sigLen - 1;
-//         sig5Start = sig3End + 1;
-//         sig5End = sig5Start + sigLen - 1;
-//     }
+        sig1End = sigLen -1;
+        sig2Start = sig1End + 1;
+        sig2End = sig2Start + sigLen - 1;
+        sig3Start = sig2End + 1;
+        sig3End = sig3Start + sigLen - 1;
+        sig4Start = sig3End + 1;
+        sig4End = sig4Start + sigLen - 1;
+        sig5Start = sig3End + 1;
+        sig5End = sig5Start + sigLen - 1;
+    }
 
-// }, 5000)
+}, 5000)
 
 </script>
 
