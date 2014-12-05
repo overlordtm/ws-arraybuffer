@@ -131,7 +131,7 @@ var last = (new Date).getTime();
 
 function d(data, y) {
     ctx.moveTo(0, y);
-    for (var i = 0; i < dataLen; i++) {
+    for (var i = 0; i < sigLen; i++) {
         var f = (y + 0.5 + data[i]) | 0,
             g = i;
         ctx.lineTo(g, f)
@@ -144,68 +144,70 @@ conn.onopen = function() {
 conn.onmessage = function(e) {
     data.set(new Float32Array(e.data));
     window.requestAnimationFrame(function() {
-        conn.send(sigLen); // request new data via WS
-
         ctx.beginPath();
 
         ctx.clearRect(0, 0, 1E3, 500); // clear canvas
 
         ctx.strokeStyle = "#000000";
         d(data.subarray(sig1Start, sig1End), 0);
-        ctx.stroke();
-        ctx.closePath();
+        // ctx.stroke();
 
-        ctx.beginPath();
-        ctx.strokeStyle = "#FF0000";
+        // ctx.beginPath();
+        // ctx.strokeStyle = "#FF0000";
         d(data.subarray(sig2Start, sig2End), 50);
-        ctx.stroke();
-        ctx.closePath();
+        // ctx.stroke();
 
-        ctx.beginPath();
-        ctx.strokeStyle = "#00FF00";
+        // ctx.beginPath();
+        // ctx.strokeStyle = "#00FF00";
         d(data.subarray(sig3Start, sig3End), 100);
-        ctx.stroke();
-        ctx.closePath();
+        // ctx.stroke();
 
-        ctx.beginPath();
-        ctx.strokeStyle = "#0000FF";
+        // ctx.beginPath();
+        // ctx.strokeStyle = "#0000FF";
         d(data.subarray(sig4Start, sig4End), 150);
-        ctx.stroke();
-        ctx.closePath();
+        // ctx.stroke();
 
-        ctx.beginPath();
-        ctx.strokeStyle = "#cccccc";
+        // ctx.beginPath();
+        // ctx.strokeStyle = "#cccccc";
         d(data.subarray(sig5Start, sig5End), 200);
         ctx.stroke();
+
         ctx.closePath();
 
+        conn.send(sigLen); // request new data via WS
         ctr++;
     })
 };
 
-setInterval(function() {
-    var delta = ((new Date).getTime() - last) / 1E3;
-    last = (new Date).getTime();
-    var fps = ctr / delta;
-    avgFps = 0.15 * avgFps + 0.85 * fps;
-    if (avgFps < 10) {
-        sigLen = sigLen / 2;
-        dataLen = sigLen * 5;
+// setInterval(function() {
+//     var delta = ((new Date).getTime() - last) / 1E3;
+//     last = (new Date).getTime();
+//     var fps = ctr / delta;
+//     avgFps = 0.25 * avgFps + 0.75 * fps;
+    
+//     div.innerHTML = sigLen + ":" + parseInt(fps) + ":" + parseInt(avgFps);
 
-        sig1End = sigLen -1;
-        sig2Start = sig1End + 1;
-        sig2End = sig2Start + sigLen - 1;
-        sig3Start = sig2End + 1;
-        sig3End = sig3Start + sigLen - 1;
-        sig4Start = sig3End + 1;
-        sig4End = sig4Start + sigLen - 1;
-        sig5Start = sig3End + 1;
-        sig5End = sig5Start + sigLen - 1;
-    }
-    div.innerHTML = sigLen + ":" + parseInt(fps) + ":" + parseInt(avgFps);
+//     ctr = 0;
+// }, 1000)
 
-    ctr = 0;
-}, 3000)
+// setInterval(function() {
+
+//     if (avgFps < 10) {
+//         sigLen = sigLen / 2;
+//         dataLen = sigLen * 5;
+
+//         sig1End = sigLen -1;
+//         sig2Start = sig1End + 1;
+//         sig2End = sig2Start + sigLen - 1;
+//         sig3Start = sig2End + 1;
+//         sig3End = sig3Start + sigLen - 1;
+//         sig4Start = sig3End + 1;
+//         sig4End = sig4Start + sigLen - 1;
+//         sig5Start = sig3End + 1;
+//         sig5End = sig5Start + sigLen - 1;
+//     }
+
+// }, 5000)
 
 </script>
 
