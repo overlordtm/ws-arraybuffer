@@ -124,6 +124,12 @@ var sig4End = sig4Start + sigLen - 1;
 var sig5Start = sig3End + 1;
 var sig5End = sig5Start + sigLen - 1;
 
+var black = "#000000";
+var red = "#FF0000";
+var green = "#00FF00";
+var blue = "#0000FF";
+var grey = "#cccccc";
+
 
 var conn = new WebSocket("ws://" + window.location.host + "/ws");
 conn.binaryType = "arraybuffer";
@@ -138,49 +144,55 @@ function d(data, y) {
         ctx.moveTo(g, f)
     }
 }
+
+function drawAll() {
+    ctx.beginPath();
+
+    ctx.clearRect(0, 0, 1E3, 500); // clear canvas
+
+    ctx.strokeStyle = black;
+    d(data.subarray(sig1Start, sig1End), 0);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.strokeStyle = red;
+    d(data.subarray(sig2Start, sig2End), 50);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.strokeStyle = green;
+    d(data.subarray(sig3Start, sig3End), 100);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.strokeStyle = blue;
+    d(data.subarray(sig4Start, sig4End), 150);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.strokeStyle = grey;
+    d(data.subarray(sig5Start, sig5End), 200);
+    ctx.stroke();
+    ctx.closePath();
+
+    conn.send(sigLen); // request new data via WS
+    ctr++;
+}
+
+function getDataAndDraw(e) {
+    data.set(new Float32Array(e.data));
+    window.requestAnimationFrame(drawAll);
+};
+
 conn.onopen = function() {
     conn.send(sigLen)
 };
-conn.onmessage = function(e) {
-    data.set(new Float32Array(e.data));
-    window.requestAnimationFrame(function() {
-        ctx.beginPath();
 
-        ctx.clearRect(0, 0, 1E3, 500); // clear canvas
-
-        ctx.strokeStyle = "#000000";
-        d(data.subarray(sig1Start, sig1End), 0);
-        ctx.stroke();
-        ctx.closePath();
-
-        ctx.beginPath();
-        ctx.strokeStyle = "#FF0000";
-        d(data.subarray(sig2Start, sig2End), 50);
-        ctx.stroke();
-        ctx.closePath();
-
-        ctx.beginPath();
-        ctx.strokeStyle = "#00FF00";
-        d(data.subarray(sig3Start, sig3End), 100);
-        ctx.stroke();
-        ctx.closePath();
-
-        ctx.beginPath();
-        ctx.strokeStyle = "#0000FF";
-        d(data.subarray(sig4Start, sig4End), 150);
-        ctx.stroke();
-        ctx.closePath();
-
-        ctx.beginPath();
-        ctx.strokeStyle = "#cccccc";
-        d(data.subarray(sig5Start, sig5End), 200);
-        ctx.stroke();
-        ctx.closePath();
-
-        conn.send(sigLen); // request new data via WS
-        ctr++;
-    })
-};
+conn.onmessage = getDataAndDraw;
 
 setInterval(function() {
     var delta = ((new Date).getTime() - last) / 1E3;
