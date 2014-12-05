@@ -113,6 +113,18 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     avgFps = 30,
     data = new Float32Array(dataLen);
 
+var sig1Start = 0;
+var sig1End = sigLen -1;
+var sig2Start = sig1End + 1;
+var sig2End = sig2Start + sigLen - 1;
+var sig3Start = sig2End + 1;
+var sig3End = sig3Start + sigLen - 1;
+var sig4Start = sig3End + 1;
+var sig4End = sig4Start + sigLen - 1;
+var sig5Start = sig3End + 1;
+var sig5End = sig5Start + sigLen - 1;
+
+
 var conn = new WebSocket("ws://" + window.location.host + "/ws");
 conn.binaryType = "arraybuffer";
 var last = (new Date).getTime();
@@ -139,31 +151,31 @@ conn.onmessage = function(e) {
         ctx.clearRect(0, 0, 1E3, 500); // clear canvas
 
         ctx.strokeStyle = "#000000";
-        d(data.subarray(0, sigLen - 1), 0);
+        d(data.subarray(sig1Start, sig1End), 0);
         ctx.stroke();
         ctx.closePath();
 
         ctx.beginPath();
         ctx.strokeStyle = "#FF0000";
-        d(data.subarray(sigLen, 2 * sigLen -1), 50);
+        d(data.subarray(sig2Start, sig2End), 50);
         ctx.stroke();
         ctx.closePath();
 
         ctx.beginPath();
         ctx.strokeStyle = "#00FF00";
-        d(data.subarray(2 * sigLen, 3 *sigLen - 1), 100);
+        d(data.subarray(sig3Start, sig3End), 100);
         ctx.stroke();
         ctx.closePath();
 
         ctx.beginPath();
         ctx.strokeStyle = "#0000FF";
-        d(data.subarray(3 * sigLen, 4 * sigLen - 1), 150);
+        d(data.subarray(sig4Start, sig4End), 150);
         ctx.stroke();
         ctx.closePath();
 
         ctx.beginPath();
         ctx.strokeStyle = "#cccccc";
-        d(data.subarray(4 * sigLen, 5 * sigLen - 1), 200);
+        d(data.subarray(sig5Start, sig5End), 200);
         ctx.stroke();
         ctx.closePath();
 
@@ -179,10 +191,21 @@ setInterval(function() {
     if (avgFps < 10) {
         sigLen = sigLen / 2;
         dataLen = sigLen * 5;
+
+        sig1End = sigLen -1;
+        sig2Start = sig1End + 1;
+        sig2End = sig2Start + sigLen - 1;
+        sig3Start = sig2End + 1;
+        sig3End = sig3Start + sigLen - 1;
+        sig4Start = sig3End + 1;
+        sig4End = sig4Start + sigLen - 1;
+        sig5Start = sig3End + 1;
+        sig5End = sig5Start + sigLen - 1;
     }
     div.innerHTML = sigLen + ":" + parseInt(fps) + ":" + parseInt(avgFps);
+
     ctr = 0;
-}, 1000)
+}, 3000)
 
 </script>
 
