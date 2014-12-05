@@ -137,11 +137,11 @@ var last = (new Date).getTime();
 
 function d(data, y) {
     ctx.moveTo(0, y);
+    var f = 0;
     for (var i = 0; i < sigLen; i++) {
-        var f = (y + 0.5 + data[i]) | 0,
-            g = i;
-        ctx.lineTo(g, f)
-        ctx.moveTo(g, f)
+        f = (y + 0.5 + data[i]) | 0
+        ctx.lineTo(i, f)
+        ctx.moveTo(i, f)
     }
 }
 
