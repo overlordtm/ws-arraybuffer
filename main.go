@@ -10,10 +10,11 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
-var size = flag.Int("size", 5000, "size of message (in float32s)")
+var size = flag.Int("size", 1000, "size of message (in float32s)")
 var homeTempl = template.Must(template.New("base").Parse(tpl))
 
 func main() {
@@ -60,13 +61,20 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for {
-		_, _, err := ws.ReadMessage()
+		_, p, err := ws.ReadMessage()
 		if err != nil {
 			log.Println("read error", err)
 			break
 		}
 
-		data := makeData(*size)
+		length, err := strconv.ParseInt(string(p), 10, 32)
+		if err != nil {
+			log.Println("read error", err)
+			break
+		}
+		log.Println("len: ", length)
+
+		data := makeData(int(length * 5))
 		buf := new(bytes.Buffer)
 
 		binary.Write(buf, binary.LittleEndian, data)
@@ -99,8 +107,11 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
  var div = document.getElementById("fps"),
     ctx = document.getElementById("myCanvas").getContext("2d"),
-    data = new Float32Array(5E3),
-    ctr = 0;
+    ctr = 0,
+    sigLen = 1E3,
+    dataLen = sigLen * 5,
+    avgFps = 30,
+    data = new Float32Array(dataLen);
 
 var conn = new WebSocket("ws://" + window.location.host + "/ws");
 conn.binaryType = "arraybuffer";
@@ -108,53 +119,54 @@ var last = (new Date).getTime();
 
 function d(data, y) {
     ctx.moveTo(0, y);
-    for (var i = 0; i < data.length; i++) {
-        var f = Math.floor(y + data[i]),
+    for (var i = 0; i < dataLen; i++) {
+        var f = (y + 0.5 + data[i]) | 0,
             g = i;
         ctx.lineTo(g, f)
         ctx.moveTo(g, f)
     }
 }
 conn.onopen = function() {
-    conn.send("foo")
+    conn.send(sigLen)
 };
 conn.onmessage = function(e) {
     data.set(new Float32Array(e.data));
     window.requestAnimationFrame(function() {
+        conn.send(sigLen); // request new data via WS
+
         ctx.beginPath();
 
         ctx.clearRect(0, 0, 1E3, 500); // clear canvas
 
         ctx.strokeStyle = "#000000";
-        d(data.subarray(0, 999), 0);
+        d(data.subarray(0, sigLen - 1), 0);
         ctx.stroke();
         ctx.closePath();
 
         ctx.beginPath();
         ctx.strokeStyle = "#FF0000";
-        d(data.subarray(1E3, 1999), 50);
+        d(data.subarray(sigLen, 2 * sigLen -1), 50);
         ctx.stroke();
         ctx.closePath();
 
         ctx.beginPath();
         ctx.strokeStyle = "#00FF00";
-        d(data.subarray(2E3, 2999), 100);
+        d(data.subarray(2 * sigLen, 3 *sigLen - 1), 100);
         ctx.stroke();
         ctx.closePath();
 
         ctx.beginPath();
         ctx.strokeStyle = "#0000FF";
-        d(data.subarray(3E3, 3999), 150);
+        d(data.subarray(3 * sigLen, 4 * sigLen - 1), 150);
         ctx.stroke();
         ctx.closePath();
 
         ctx.beginPath();
         ctx.strokeStyle = "#cccccc";
-        d(data.subarray(4E3, 4999), 200);
+        d(data.subarray(4 * sigLen, 5 * sigLen - 1), 200);
         ctx.stroke();
         ctx.closePath();
 
-        conn.send("foo"); // request new data via WS
         ctr++;
     })
 };
@@ -162,7 +174,13 @@ conn.onmessage = function(e) {
 setInterval(function() {
     var delta = ((new Date).getTime() - last) / 1E3;
     last = (new Date).getTime();
-    div.innerHTML = ctr / delta;
+    var fps = ctr / delta;
+    avgFps = 0.15 * avgFps + 0.85 * fps;
+    if (avgFps < 10) {
+        sigLen = sigLen / 2;
+        dataLen = sigLen * 5;
+    }
+    div.innerHTML = sigLen + ":" + parseInt(fps) + ":" + parseInt(avgFps);
     ctr = 0;
 }, 1000)
 
